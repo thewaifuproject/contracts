@@ -1,17 +1,15 @@
 pragma solidity ^0.4.24;
 
 import "./libs/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
+import "./WaifuNames.sol";
 
-contract WaifuDistribution is ERC721Full{
+contract WaifuDistribution is ERC721Full, WaifuNames{
     
     uint creationTime;
 
 	constructor() ERC721Full("WaifuChain", "WAIFU") public {
 	    creationTime=now;
 	}
-
-    //Total: 450 waifus
-	string[] waifusNames=["Asuna", "Rem"]; 
 	
 	//Auction logic to release a new waifu every day
 	mapping(uint=>address) topDonor;
