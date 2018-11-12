@@ -4,7 +4,7 @@ import "./WaifuDistribution.sol";
 
 contract SocialMediaWaifus is WaifuDistribution{
 
-	modifier isWaifuOwner(_tokenId){
+	modifier isWaifuOwner(uint _tokenId){
 		address owner = ownerOf(_tokenId);
 		require(msg.sender == owner || isApprovedForAll(owner, msg.sender));
 		_;
@@ -17,7 +17,7 @@ contract SocialMediaWaifus is WaifuDistribution{
 	/// @param _network Social media platform where the profile is located (eg: "facebook.com", "twitter.com"...)
 	/// @param _profile Profile/user handle on the social media platform (eg: "@corollari", "@messi"...)
 	function _getSocialProfileId(string _network, string _profile) private pure returns (uint){
-		return keccak256(_network, _profile);
+		return uint256(keccak256(abi.encodePacked(_network, _profile)));
 	}
 
 	/// @dev Return an array of tokenIds representing the waifus linked to a social media profile
@@ -26,15 +26,18 @@ contract SocialMediaWaifus is WaifuDistribution{
 	function getWaifusInProfile(string _network, string _profile) external view returns (uint[]){
 		uint profileId=_getSocialProfileId(_network, _profile);
 		uint length=0;
-		for(uint i=0; i<_ownedWaifus; i++){
-			if(_tokenToMedia[i]==profileId){
+		uint i;
+		for(i=0; i<_allTokens.length; i++){
+			if(_tokenToMedia[_allTokens[i]]==profileId){
 				length++;
 			}
 		}
-		uint[] waifus=new uint[](length);
-		for(uint i=0; i<_ownedWaifus; i++){
-			if(_tokenToMedia[i]==profileId){
-				waifus.push(i);
+		uint[] memory waifus=new uint[](length);
+		uint index=0;
+		for(i=0; i<_allTokens.length; i++){
+			if(_tokenToMedia[_allTokens[i]]==profileId){
+				waifus[index]=_allTokens[i];
+				index++;
 			}
 		}
 		return waifus;
