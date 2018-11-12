@@ -3,11 +3,62 @@ pragma solidity ^0.4.24;
 import "./libs/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 
 contract WaifuDistribution is ERC721Full{
+    
+    uint creationTime;
 
-	constructor() ERC721Full("WaifuChain", "WAIFU") public {}
+	constructor() ERC721Full("WaifuChain", "WAIFU") public {
+	    creationTime=now;
+	}
 
+    //Total: 450 waifus
+	string[] waifusNames=["Asuna", "Rem"]; 
+	
 	//Auction logic to release a new waifu every day
-	string[] waifusNames=["Asuna", "Rem"];
+	mapping(uint=>address) topDonor;
+	mapping(uint=>uint) topPaid;
+	
+	function _waifuIndexRangeByDay(uint time) view internal returns (uint, uint){
+	    uint256 day=(time-creationTime)/(60*60*24);
+	    uint256 month=day/30;
+	    require(month<=3);
+	    uint min;
+	    uint max;
+	    if(month==3){
+	        min=(8+4+2)*30+day%30;
+	        max=min;
+	    }
+	    else if(month==2){
+	        min=(8+4)*30+2*(day%30);
+	        max=min+1;
+	    }
+	    else if(month==1){
+	        min=(8)*30+4*(day%30);
+	        max=min+3;
+	    }
+	    else if(month==0){
+	        min=8*(day%30);
+	        max=min+7;
+	    }
+	    return (min, max);
+	}
+	
+	event Bid(uint waifuIndex, uint amount);
+	
+	function bidWaifu(uint waifuIndex) external payable{
+	    (uint min, uint max)=_waifuIndexRangeByDay(now);
+	    require(waifuIndex>=min && waifuIndex<=max);
+	    require(msg.value>topPaid[waifuIndex]);
+	    topDonor[waifuIndex].transfer(topPaid[waifuIndex]);
+	    topPaid[waifuIndex]=msg.value;
+	    topDonor[waifuIndex]=msg.sender;
+	    emit Bid(waifuIndex, msg.value);
+	}
+	
+	function claimWaifu(uint waifuIndex) external{
+	    require(msg.sender==topDonor[waifuIndex]);
+	    topDonor[waifuIndex]=address(0);
+	    _mint(msg.sender, uint(keccak256(bytes(waifusNames[waifuIndex]))));
+	}
 	
 	//Copied from Oraclize
 	function uint2str(uint i) internal pure returns (string){
