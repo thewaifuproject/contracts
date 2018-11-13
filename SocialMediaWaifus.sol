@@ -27,16 +27,16 @@ contract SocialMediaWaifus is WaifuDistribution{
 		uint profileId=_getSocialProfileId(_network, _profile);
 		uint length=0;
 		uint i;
-		for(i=0; i<_allTokens.length; i++){
-			if(_tokenToMedia[_allTokens[i]]==profileId){
+		for(i=0; i<_totalWaifus; i++){
+			if(_tokenToMedia[i]==profileId){
 				length++;
 			}
 		}
 		uint[] memory waifus=new uint[](length);
 		uint index=0;
-		for(i=0; i<_allTokens.length; i++){
-			if(_tokenToMedia[_allTokens[i]]==profileId){
-				waifus[index]=_allTokens[i];
+		for(i=0; i<_totalWaifus; i++){
+			if(_tokenToMedia[i]==profileId){
+				waifus[index]=i;
 				index++;
 			}
 		}

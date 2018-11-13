@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 
 import "./libs/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
-import "./WaifuNames.sol";
 
-contract WaifuDistribution is ERC721Full, WaifuNames{
+contract WaifuDistribution is ERC721Full{
     
     uint creationTime;
+    uint _totalWaifus=450;
 
 	constructor() ERC721Full("WaifuChain", "WAIFU") public {
 	    creationTime=now;
@@ -54,8 +54,10 @@ contract WaifuDistribution is ERC721Full, WaifuNames{
 	
 	function claimWaifu(uint waifuIndex) external{
 	    require(msg.sender==topDonor[waifuIndex]);
+	    (,uint max)=_waifuIndexRangeByDay(now);
+	    require(waifuIndex>max);
 	    topDonor[waifuIndex]=address(0);
-	    _mint(msg.sender, uint(keccak256(bytes(waifusNames[waifuIndex]))));
+	    _mint(msg.sender, waifuIndex);
 	}
 	
 	//Copied from Oraclize
@@ -79,6 +81,6 @@ contract WaifuDistribution is ERC721Full, WaifuNames{
 	function _mint(address to, uint256 tokenId) internal {
 	    super._mint(to, tokenId);
 	    
-	    _setTokenURI(tokenId, string(abi.encodePacked("https://waifuchain.moe/api?waifu=", uint2str(tokenId))));
+	    _setTokenURI(tokenId, string(abi.encodePacked("https://api.waifuchain.moe?waifu=", uint2str(tokenId))));
 	}
 }
