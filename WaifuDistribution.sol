@@ -4,11 +4,14 @@ import "./libs/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 
 contract WaifuDistribution is ERC721Full{
     
-    uint creationTime;
-    uint _totalWaifus=450;
+	uint public creationTime;
+	string baseURL="https://api.waifuchain.moe?waifu=";
 
 	constructor() ERC721Full("WaifuChain", "WAIFU") public {
 	    creationTime=now;
+	    _mint(msg.sender, 0);
+	    _mint(msg.sender, 1);
+	    _mint(msg.sender, 2);
 	}
 	
 	//Auction logic to release a new waifu every day
@@ -16,7 +19,7 @@ contract WaifuDistribution is ERC721Full{
 	mapping(uint=>uint) topPaid;
 	
 	function _waifuIndexRangeByDay(uint time) view internal returns (uint, uint){
-	    uint256 day=(time-creationTime)/(60*60*24);
+	    uint256 day=(time-creationTime)/(1 days);
 	    uint256 month=day/30;
 	    require(month<=3);
 	    uint min;
@@ -41,6 +44,10 @@ contract WaifuDistribution is ERC721Full{
 	}
 	
 	event Bid(uint waifuIndex, uint amount);
+	
+	function getMaxBid(uint waifuIndex) view external returns (uint){
+		return topPaid[waifuIndex];
+	}
 	
 	function bidWaifu(uint waifuIndex) external payable{
 	    (uint min, uint max)=_waifuIndexRangeByDay(now);
@@ -77,10 +84,8 @@ contract WaifuDistribution is ERC721Full{
         }
         return string(bstr);
     }
-	
-	function _mint(address to, uint256 tokenId) internal {
-	    super._mint(to, tokenId);
-	    
-	    _setTokenURI(tokenId, string(abi.encodePacked("https://api.waifuchain.moe?waifu=", uint2str(tokenId))));
+
+	function tokenURI(uint256 tokenId) external view returns (string) {
+	    return string(abi.encodePacked(baseURL, uint2str(tokenId)));
 	}
 }

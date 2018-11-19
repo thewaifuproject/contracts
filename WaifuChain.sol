@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "./SocialMediaWaifus.sol";
+import "./Governance.sol";
 
-contract WaifuChain is SocialMediaWaifus{
+contract WaifuChain is Governance{
 
 }
