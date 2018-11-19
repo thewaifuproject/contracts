@@ -53,7 +53,9 @@ contract WaifuDistribution is ERC721Full{
 	    (uint min, uint max)=_waifuIndexRangeByDay(now);
 	    require(waifuIndex>=min && waifuIndex<=max);
 	    require(msg.value>topPaid[waifuIndex]);
-	    topDonor[waifuIndex].transfer(topPaid[waifuIndex]);
+	    uint lastPaid=topPaid[waifuIndex];
+	    topPaid[waifuIndex]=0;
+	    topDonor[waifuIndex].transfer(lastPaid);
 	    topPaid[waifuIndex]=msg.value;
 	    topDonor[waifuIndex]=msg.sender;
 	    emit Bid(waifuIndex, msg.value);
