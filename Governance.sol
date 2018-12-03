@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "./SocialMediaWaifus.sol";
+import "./WaifuUsers.sol";
 
-contract Governance is SocialMediaWaifus{
+contract Governance is WaifuUsers{
 
 	mapping(uint=>string) _newBaseURL;
 	mapping(uint=>address) _newFundOwner;
