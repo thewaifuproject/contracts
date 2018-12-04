@@ -24,7 +24,7 @@ mapping(address => uint) pendingReturns;
 	    creationTime=now;
 	}
 
-	event Bid(uint waifuIndex);
+	event NewBid(uint waifuIndex);
 
 /// Place a blinded bid with `_blindedBid` = keccak256(value,
     /// fake, secret).
@@ -45,12 +45,12 @@ mapping(address => uint) pendingReturns;
             blindedBid: _blindedBid,
             deposit: msg.value
         }));
-	Bid(_tokenId);
+	emit NewBid(_tokenId);
     }
 
 function _waifuIndexRangeByDay(uint time) view internal returns (uint, uint){
 	    uint256 day=(time-creationTime)/(1 days);
-	    assert(day>=0)
+	    assert(day>=0);
 	    uint256 month=day/30;
 	    require(month<=3);
 	    uint min;
@@ -96,7 +96,7 @@ function _waifuIndexRangeByDay(uint time) view internal returns (uint, uint){
 
         uint refund;
         for (uint i = 0; i < length; i++) {
-            Bid storage bid = bids[msg.sender][i];
+            Bid storage bid = bids[_tokenId][msg.sender][i];
             (uint value, bool fake, bytes32 secret) =
                     (_values[i], _fake[i], _secret[i]);
             if (bid.blindedBid != keccak256(value, fake, secret)) {
@@ -127,7 +127,7 @@ function _waifuIndexRangeByDay(uint time) view internal returns (uint, uint){
         }
         if (highestBidder[_tokenId] != 0) {
             // Refund the previously highest bidder.
-            pendingReturns[highestBidder[_tokenId]] += highestBid;
+            pendingReturns[highestBidder[_tokenId]] += highestBid[_tokenId];
         }
         highestBid[_tokenId] = value;
         highestBidder[_tokenId] = bidder;
