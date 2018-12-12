@@ -12,7 +12,7 @@ struct Bid {
 
 mapping(uint=>mapping(address => Bid[])) public bids;
 
-mapping(address => uint) pendingReturns;
+mapping(address => uint) public pendingReturns;
 
     mapping(uint=>address) public highestBidder;
     mapping(uint=>uint) public highestBid;
