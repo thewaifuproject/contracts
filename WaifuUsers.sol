@@ -11,7 +11,7 @@ contract WaifuUsers is WaifuDistribution{
 	}
 
 	// Associates each tokenId with the profile it's linked to
-	mapping(uint=>string) public _tokenToProfile; 
+	mapping(uint=>string) _tokenToProfile; 
 
 	/// @dev Generate the unique id associated with each profile
 	/// @param _profile Profile/user handle 
